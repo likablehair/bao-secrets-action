@@ -32,7 +32,7 @@ async function run() {
     }
 
     // 4. Salvataggio su File (in formato .env)
-    const fileContent = Object.keys(secrets).map((key) => `${key}=${secrets[key]}`).join("\n");
+    const fileContent = Object.keys(secrets).map((key) => `${key}=${secrets[key]}`).join("\n") + "\n";
     fs.writeFileSync(fullPath, fileContent, 'utf8');
 
     core.info(`✅ Secret recuperati e salvati con successo in: ${outputFile}`);

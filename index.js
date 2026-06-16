@@ -22,6 +22,8 @@ async function run() {
       core.warning('La chiamata API ha avuto successo, ma non sono stati trovati secret nel path.');
     }
 
+    core.info(`Secret recuperati: ${Object.keys(secrets).join(', ')}`);
+
     // 4. Salvataggio su File (in formato .env)
     const fileContent = Object.keys(secrets).map((key) => `${key}=${secrets[key]}`).join("\n");
     fs.writeFileSync(outputFile, fileContent, 'utf8');

@@ -16,7 +16,7 @@ async function run() {
 
     core.info(`Autenticazione riuscita. Recupero secret dal path: ${secretPath}`);
 
-    const secret = await GetSecrets({ secretPath, domain: baoUrl, token: clientToken });
+    const secrets = await GetSecrets({ secretPath, domain: baoUrl, token: clientToken });
 
     if (!secrets || Object.keys(secrets).length === 0) {
       core.warning('La chiamata API ha avuto successo, ma non sono stati trovati secret nel path.');

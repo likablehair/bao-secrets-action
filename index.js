@@ -10,6 +10,10 @@ async function run() {
     const secretPath = core.getInput('secretPath', { required: true });
     const outputFile = core.getInput('outputFile') || 'openbao_secrets.env';
 
+    const cleanOutput = outputFile.replace(/\/$/, "") || "/";
+    const path = `${process.env.GITHUB_WORKSPACE}${cleanOutput}`;
+    await fs.mkdir(path, { recursive: true });
+
     core.info('Avvio autenticazione AppRole su OpenBao...');
 
     const clientToken = await Login({ roleId, secretId, domain: baoUrl });
@@ -24,12 +28,9 @@ async function run() {
 
     // 4. Salvataggio su File (in formato .env)
     const fileContent = Object.keys(secrets).map((key) => `${key}=${secrets[key]}`).join("\n");
-    core.info(`Salvataggio dei secret recuperati in: ${outputFile}`);
-    core.info(`Contenuto da salvare:\n${fileContent}`);
-    fs.writeFileSync(outputFile, fileContent, 'utf8');
+    fs.writeFileSync(path, fileContent, 'utf8');
 
-
-    core.info(`✅ Secret recuperati e salvati con successo in: ${outputFile}`);
+    core.info(`✅ Secret recuperati e salvati con successo in: ${path}`);
 
   } catch (error) {
     // In caso di errore, fallisce l'azione restituendo un messaggio chiaro

@@ -9,7 +9,7 @@ async function run() {
     const roleId = core.getInput('roleId', { required: true });
     const secretId = core.getInput('secretId', { required: true });
     const secretPath = core.getInput('secretPath', { required: true });
-    const outputFile = core.getInput('outputFile') || 'openbao_secrets.env';
+    let outputFile = core.getInput('outputFile') || 'openbao_secrets.env';
 
     if (outputFile.startsWith('/')) {
       outputFile = outputFile.substring(1);

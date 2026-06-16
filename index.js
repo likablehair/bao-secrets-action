@@ -18,14 +18,16 @@ async function run() {
 
     const secrets = await GetSecrets({ secretPath, domain: baoUrl, token: clientToken });
 
-    core.info(`JSON grezzo ricevuto da OpenBao: ${JSON.stringify(secrets)}`);
     if (!secrets || Object.keys(secrets).length === 0) {
       core.warning('La chiamata API ha avuto successo, ma non sono stati trovati secret nel path.');
     }
 
     // 4. Salvataggio su File (in formato .env)
     const fileContent = Object.keys(secrets).map((key) => `${key}=${secrets[key]}`).join("\n");
+    core.info(`Salvataggio dei secret recuperati in: ${outputFile}`);
+    core.info(`Contenuto da salvare:\n${fileContent}`);
     fs.writeFileSync(outputFile, fileContent, 'utf8');
+
 
     core.info(`✅ Secret recuperati e salvati con successo in: ${outputFile}`);
 

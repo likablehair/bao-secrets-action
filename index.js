@@ -1,7 +1,6 @@
-const core = require('@actions/core');
-const fs = require('fs');
-
 import { Login, GetSecrets } from './bao.js';
+import core from '@actions/core';
+import fs from 'fs';
 
 async function run() {
   try {

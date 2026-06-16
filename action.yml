@@ -1,19 +1,19 @@
 name: 'OpenBao Secret Fetcher'
 description: 'Recupera i secret da OpenBao tramite AppRole e li salva in un file.'
 inputs:
-  bao_url:
+  baoUrl:
     description: 'URL di base di OpenBao (es. https://vault.mio-dominio.com)'
     required: true
-  role_id:
+  roleId:
     description: 'Il Role ID di AppRole'
     required: true
-  secret_id:
+  secretId:
     description: 'Il Secret ID di AppRole'
     required: true
-  secret_path:
+  secretPath:
     description: 'Il path dei secret (es. secret/data/mio_progetto)'
     required: true
-  output_file:
+  outputFile:
     description: 'Il nome del file di output in cui salvare i secret'
     required: false
     default: 'openbao_secrets.env'

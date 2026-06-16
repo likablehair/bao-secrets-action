@@ -4,11 +4,11 @@ import fs from 'fs';
 
 async function run() {
   try {
-    const baoUrl = core.getInput('bao_url', { required: true }).replace(/\/$/, '');
-    const roleId = core.getInput('role_id', { required: true });
-    const secretId = core.getInput('secret_id', { required: true });
-    const secretPath = core.getInput('secret_path', { required: true });
-    const outputFile = core.getInput('output_file') || 'openbao_secrets.env';
+    const baoUrl = core.getInput('baoUrl', { required: true }).replace(/\/$/, '');
+    const roleId = core.getInput('roleId', { required: true });
+    const secretId = core.getInput('secretId', { required: true });
+    const secretPath = core.getInput('secretPath', { required: true });
+    const outputFile = core.getInput('outputFile') || 'openbao_secrets.env';
 
     core.info('Avvio autenticazione AppRole su OpenBao...');
 

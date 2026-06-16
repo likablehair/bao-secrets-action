@@ -1,5 +1,5 @@
 import { Login, GetSecrets } from './bao.js';
-import core from '@actions/core';
+import * as core from '@actions/core';
 import fs from 'fs';
 
 async function run() {

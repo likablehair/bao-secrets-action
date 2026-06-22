@@ -28,7 +28,7 @@ jobs:
       - name: Recupera Secret da OpenBao
         uses: tuo-utente/nome-repo-action@v1 # <- Sostituisci con il tuo percorso
         with:
-          baoUrl: '[https://bao.tuodominio.com](https://bao.tuodominio.com)'
+          baoUrl: 'https://bao.tuodominio.com'
           roleId: ${{ secrets.BAO_ROLE_ID }}
           secretId: ${{ secrets.BAO_SECRET_ID }}
           secretPath: 'prog1/data/my-app/config'

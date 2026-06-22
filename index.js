@@ -6,17 +6,17 @@ import path from 'path';
 async function resolveSecretReferences(secrets, domain, token, baseSecretPath) {
   const resolvedSecrets = { ...secrets };
   const cache = {}; // Cache per evitare chiamate ripetute allo stesso path
-  const refRegex = /^\${{\s*(.*?)\s*}}$/g; // Cerca i pattern ${{...}}
+  const refRegex = /^\${{\s*(.*?)\s*}}$/; // Cerca i pattern ${{...}}
   const allowedEngine = baseSecretPath.split('/')[0] + '/' + baseSecretPath.split('/')[1] + '/' + baseSecretPath.split('/')[2]; // Es: prog1/data/environment1
 
   for (const [key, value] of Object.entries(resolvedSecrets)) {
     if (typeof value !== 'string') continue;
 
-    const match = value.match(refRegex);
+    const matchStr = value.match(refRegex);
     
-    if (match) {
-      const fullMatch = match[0];       // es: ${{prog1/data/db/password}}
-      const refString = match[1].trim();// es: prog1/data/db/password
+    if (matchStr) {
+      const fullMatch = matchStr[0];       // es: ${{prog1/data/db/password}}
+      const refString = matchStr[1].trim();// es: prog1/data/db/password
 
       // Assumiamo che tutto ciò che c'è prima dell'ultimo '/' sia il path, 
       // e la parte finale sia la chiave da estrarre

@@ -88,7 +88,7 @@ async function run() {
       core.warning('La chiamata API ha avuto successo, ma non sono stati trovati secret nel path.');
     }
 
-    const finalSecrets = await resolveSecretReferences(secrets, baoUrl, clientToken);
+    const finalSecrets = await resolveSecretReferences(secrets, baoUrl, clientToken, secretPath);
 
     // 4. Salvataggio su File (in formato .env)
     const fileContent = Object.keys(secrets).map((key) => `${key}=${secrets[key]}`).join("\n") + "\n";

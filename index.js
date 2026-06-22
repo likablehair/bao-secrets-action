@@ -91,7 +91,7 @@ async function run() {
     const finalSecrets = await resolveSecretReferences(secrets, baoUrl, clientToken, secretPath);
 
     // 4. Salvataggio su File (in formato .env)
-    const fileContent = Object.keys(secrets).map((key) => `${key}=${secrets[key]}`).join("\n") + "\n";
+    const fileContent = Object.keys(finalSecrets).map((key) => `${key}=${finalSecrets[key]}`).join("\n") + "\n";
     fs.writeFileSync(fullPath, fileContent, 'utf8');
 
     core.info(`✅ Secret recuperati e salvati con successo in: ${outputFile}`);

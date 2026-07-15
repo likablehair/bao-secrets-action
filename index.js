@@ -1,4 +1,4 @@
-import { Login, GetSecrets } from './bao.js';
+import { Login, GetSecrets, ListSecrets } from './bao.js';
 import * as core from '@actions/core';
 import fs from 'fs';
 import path from 'path';

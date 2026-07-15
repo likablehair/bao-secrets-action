@@ -60,12 +60,41 @@ async function resolveSecretReferences(secrets, domain, token, baseSecretPath) {
   return resolvedSecrets;
 }
 
+async function fetchAndSaveEnvFile({ targetPath, targetFile, baoUrl, clientToken }) {
+  const workspace = process.env.GITHUB_WORKSPACE || '.';
+  const fullPath = path.join(workspace, targetFile);
+  const dirPath = path.dirname(fullPath);
+  fs.mkdirSync(dirPath, { recursive: true });
+
+  core.info(`📥 Recupero secret dal path: ${targetPath}`);
+  
+  try {
+    const secrets = await GetSecrets({ secretPath: targetPath, domain: baoUrl, token: clientToken });
+
+    if (!secrets || Object.keys(secrets).length === 0) {
+      core.warning(`Nessun secret trovato in: ${targetPath}`);
+      return;
+    }
+
+    const finalSecrets = await resolveSecretReferences(secrets, baoUrl, clientToken, targetPath);
+
+    const fileContent = Object.keys(finalSecrets).map((key) => `${key}=${finalSecrets[key]}`).join("\n") + "\n";
+    fs.writeFileSync(fullPath, fileContent, 'utf8');
+
+    core.info(`✅ Secret salvati con successo in: ${targetFile}`);
+  } catch (error) {
+    // Se fallisce il get di un secret (es. cartella vuota o permessi), lanciamo warning invece che bloccare l'azione se ci si trova in una sotto-cartella
+    core.warning(`Impossibile processare i secret per '${targetPath}': ${error.message}`);
+  }
+}
+
 async function run() {
   try {
     const baoUrl = core.getInput('baoUrl', { required: true }).replace(/\/$/, '');
     const roleId = core.getInput('roleId', { required: true });
     const secretId = core.getInput('secretId', { required: true });
     const secretPath = core.getInput('secretPath', { required: true });
+    const exportSubdirectories = core.getInput('exportSubdirectories') === 'true' || core.getBooleanInput('export-subdirectories') || false;;
     let outputFile = core.getInput('outputFile') || 'openbao_secrets.env';
 
     if (outputFile.startsWith('/')) {
@@ -82,20 +111,39 @@ async function run() {
 
     core.info(`Autenticazione riuscita. Recupero secret dal path: ${secretPath}`);
 
-    const secrets = await GetSecrets({ secretPath, domain: baoUrl, token: clientToken });
+    await fetchAndSaveEnvFile({
+      targetPath: secretPath,
+      targetFile: outputFile,
+      baoUrl,
+      clientToken
+    });
 
-    if (!secrets || Object.keys(secrets).length === 0) {
-      core.warning('La chiamata API ha avuto successo, ma non sono stati trovati secret nel path.');
+    if (exportSubdirectories){
+      core.info(`📂 Scansione sotto-cartelle abilitata per il path: ${secretPath}`);
+      const keys = await ListSecrets({ secretPath, domain: baoUrl, token: clientToken });
+
+      const subdirectories = keys.filter(key => key.endsWith('/'));
+
+      if (subdirectories.length === 0) {
+        core.info('Nessuna sotto-cartella trovata nel path specificato.');
+      } else {
+        const cleanBasePath = secretPath.replace(/\/$/, ''); // Rimuove lo slash finale dal path base se presente
+
+        for (const subdir of subdirectories) {
+          const cleanSubdirName = subdir.slice(0, -1); // Rimuove lo slash finale es: "service1/" -> "service1"
+          
+          const subSecretPath = `${cleanBasePath}/${cleanSubdirName}`;
+          const subOutputFile = `${outputFile}.${cleanSubdirName}`; // es: openbao_secrets.env.service1
+
+          await fetchAndSaveEnvFile({
+            targetPath: subSecretPath,
+            targetFile: subOutputFile,
+            baoUrl,
+            clientToken
+          });
+        }
+      }
     }
-
-    const finalSecrets = await resolveSecretReferences(secrets, baoUrl, clientToken, secretPath);
-
-    // 4. Salvataggio su File (in formato .env)
-    const fileContent = Object.keys(finalSecrets).map((key) => `${key}=${finalSecrets[key]}`).join("\n") + "\n";
-    fs.writeFileSync(fullPath, fileContent, 'utf8');
-
-    core.info(`✅ Secret recuperati e salvati con successo in: ${outputFile}`);
-
   } catch (error) {
     // In caso di errore, fallisce l'azione restituendo un messaggio chiaro
     core.setFailed(`Errore durante l'esecuzione dell'action: ${error.message}`);

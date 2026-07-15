@@ -34,3 +34,26 @@ export const GetSecrets = async ({ secretPath, domain, token }) => {
     // Nel KVv1 sono semplicemente sotto .data
     return secretData.data.data || secretData.data;
 }
+
+export const ListSecrets = async ({ secretPath, domain, token }) => {
+    // Nel Secret Engine KVv2 le operazioni di LIST vanno eseguite sul path '/metadata/' 
+    // anziché '/data/'. Nel KVv1 si usa il path standard.
+    const listPath = secretPath.includes('/data/') 
+      ? secretPath.replace('/data/', '/metadata/')
+      : secretPath;
+
+    const listRes = await fetch(`${domain}/v1/${listPath}`, {
+      method: 'LIST',
+      headers: { 'X-Vault-Token': token }
+    });
+
+    if (!listRes.ok) {
+      // Se risponde 404, significa semplicemente che il path non ha sotto-chiavi/cartelle
+      if (listRes.status === 404) return [];
+      const errText = await listRes.text();
+      throw new Error(`Recupero elenco sotto-cartelle fallito (${listRes.status}): ${errText}`);
+    }
+
+    const listData = await listRes.json();
+    return listData?.data?.keys || [];
+}

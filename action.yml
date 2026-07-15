@@ -13,6 +13,10 @@ inputs:
   secretPath:
     description: 'Il path dei secret (es. secret/data/mio_progetto)'
     required: true
+  export-subdirectories:
+    description: 'Se impostato a true, esporta anche i segreti presenti nelle sotto-cartelle del secretPath creando file .env.nomecartella'
+    required: false
+    default: 'false'
   outputFile:
     description: 'Il nome del file di output in cui salvare i secret'
     required: false

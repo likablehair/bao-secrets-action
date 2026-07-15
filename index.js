@@ -122,14 +122,12 @@ async function run() {
       core.info(`📂 Scansione sotto-cartelle abilitata per il path: ${secretPath}`);
       const keys = await ListSecrets({ secretPath, domain: baoUrl, token: clientToken });
 
-      const subdirectories = keys.filter(key => key.endsWith('/'));
-
-      if (subdirectories.length === 0) {
+      if (keys.length === 0) {
         core.info('Nessuna sotto-cartella trovata nel path specificato.');
       } else {
         const cleanBasePath = secretPath.replace(/\/$/, ''); // Rimuove lo slash finale dal path base se presente
 
-        for (const subdir of subdirectories) {
+        for (const subdir of keys) {
           const cleanSubdirName = subdir.slice(0, -1); // Rimuove lo slash finale es: "service1/" -> "service1"
           
           const subSecretPath = `${cleanBasePath}/${cleanSubdirName}`;

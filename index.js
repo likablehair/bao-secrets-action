@@ -128,8 +128,8 @@ async function run() {
         const cleanBasePath = secretPath.replace(/\/$/, ''); // Rimuove lo slash finale dal path base se presente
 
         for (const subdir of keys) {
-          const cleanSubdirName = subdir.slice(0, -1); // Rimuove lo slash finale es: "service1/" -> "service1"
-          
+          const cleanSubdirName = subdir.replace(/\/$/, ''); // Rimuove lo slash finale dal nome della sotto-cartella se presente
+
           const subSecretPath = `${cleanBasePath}/${cleanSubdirName}`;
           const subOutputFile = `${outputFile}.${cleanSubdirName}`; // es: openbao_secrets.env.service1
 
